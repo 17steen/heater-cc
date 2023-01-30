@@ -22,20 +22,6 @@ namespace {
 volatile std::atomic<bool> done = false;
 }
 
-auto read_file(char const *path) -> std::string {
-
-  auto file = std::ifstream{path};
-  auto buffer = std::string{};
-
-  file.seekg(0, std::ios::end);
-  auto size = file.tellg();
-  buffer.resize(size);
-  file.seekg(0, std::ios::beg);
-  file.read(buffer.data(), size);
-
-  return buffer;
-}
-
 auto do_gpu() -> bool {
   auto platform = cl::Platform{};
   if (cl::Platform::get(&platform) != CL_SUCCESS) {
@@ -64,8 +50,11 @@ auto do_gpu() -> bool {
   auto amount = cl_uint{1'000'000};
 
   queue.enqueueWriteBuffer(buffer, true, 0, sizeof(cl_bool), &amount);
-
-  auto source = read_file("kernel.cl");
+  
+  
+  auto const source = std::string{
+    #include "kernel.cl.h"
+  };
 
   auto program = cl::Program(context, {source});
 
