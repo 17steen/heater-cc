@@ -88,7 +88,7 @@ auto do_gpu() -> bool {
   return true;
 }
 
-int main() {
+auto main() -> int {
 
   std::signal(SIGINT, [](int) { done = true; });
 
